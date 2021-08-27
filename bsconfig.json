@@ -2,8 +2,8 @@
   "name": "rescript-project-template",
   "version": "0.0.1",
   "sources": {
-    "dir" : "src",
-    "subdirs" : true
+    "dir": "src",
+    "subdirs": true
   },
   "package-specs": {
     "module": "commonjs",
@@ -11,8 +11,17 @@
   },
   "suffix": ".bs.js",
   "bs-dependencies": [
+    "@reasonml-community/graphql-ppx",
+    "@glennsl/bs-json",
+    "bs-fetch",
+    "reason-future"
   ],
-  "warnings": {
-    "error" : "+101"
+  "ppx-flags": ["@reasonml-community/graphql-ppx/ppx"],
+  "bsc-flags": ["-open Belt"],
+  "graphql": {
+    "schema": "schema.json"
   },
+  "warnings": {
+    "error": "+101"
+  }
 }

@@ -1,1 +1,3 @@
-Js.log("Hello, World!")
+let fetchOrder = () => {
+  TestQuery.Test.Query.queryAndParse()
+}
