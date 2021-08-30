@@ -5,17 +5,10 @@ The only official ReScript starter template.
 ## Installation
 
 ```sh
-npm install
+yarn install
 ```
 
-## Build
+## Develop
 
-- Build: `npm run build`
-- Clean: `npm run clean`
-- Build & watch: `npm run start`
-
-## Run
-
-```sh
-node src/Demo.bs.js
-```
+- build & watch `yarn start`
+- run bundler `./node_modules/.bin/parcel src/index.html`
