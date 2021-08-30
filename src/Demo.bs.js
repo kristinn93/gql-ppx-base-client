@@ -9,6 +9,9 @@ function fetchTest(param) {
 
 fetchTest(undefined).then(function (response) {
       console.log("response", response);
+      if (typeof response === "object" && response.NAME === "Data") {
+        console.log(response.VAL.algoliaSearchKey.key);
+      }
       return Promise.resolve(undefined);
     });
 

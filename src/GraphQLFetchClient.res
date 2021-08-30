@@ -80,11 +80,11 @@ module MakeQuery = (T: GraphQLClientBase) => {
   }
 
   type rescriptResponse = abstractReasonResponse<T.Query.t>
-  //   type networkResponse = [
-  //     | #Data(T.Query.t)
-  //     | #DataWithError(T.Query.t, list<SharedTypes.Errors.graphQLerror>)
-  //     | #Error(list<SharedTypes.Errors.graphQLerror>)
-  //   ]
+  type networkResponse = [
+    | #Data(T.Query.t)
+    | #DataWithError(T.Query.t, list<SharedTypes.Errors.graphQLerror>)
+    | #Error(list<SharedTypes.Errors.graphQLerror>)
+  ]
   let parse = (responseJson): rescriptResponse => {
     let response = parseResponseJson(responseJson)
     try switch (response["data"], response["errors"]) {
