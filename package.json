@@ -4,7 +4,8 @@
   "scripts": {
     "build": "rescript",
     "clean": "rescript clean -with-deps",
-    "start": "rescript build -w"
+    "start": "rescript build -w",
+    "run": "parcel src/index.html"
   },
   "keywords": [
     "rescript"
@@ -14,6 +15,7 @@
   "dependencies": {
     "@glennsl/bs-json": "5.0.2",
     "bs-fetch": "0.6.2",
+    "parcel-bundler": "^1.12.5",
     "reason-future": "2.6.0",
     "rescript": "*"
   },

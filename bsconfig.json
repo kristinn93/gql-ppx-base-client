@@ -21,6 +21,16 @@
   "graphql": {
     "schema": "schema.json"
   },
+  "package-specs": [
+    {
+      "module": "es6",
+      "in-source": true
+    },
+    {
+      "module": "commonjs",
+      "in-source": false
+    }
+  ],
   "warnings": {
     "error": "+101"
   }

@@ -14,6 +14,7 @@ module type QueryConfig = {
    to be called */
   external unsafe_fromJson: Js.Json.t => Raw.t = "%identity"
   let parse: Raw.t => t
+  let toJson: Raw.t => Js.Json.t
 }
 
 module type GraphQLClientBase = {
@@ -79,12 +80,13 @@ module MakeQuery = (T: GraphQLClientBase) => {
   }
 
   type rescriptResponse = abstractReasonResponse<T.Query.t>
-  type networkResponse = [
-    | #Data(T.Query.t)
-    | #DataWithError(T.Query.t, list<SharedTypes.Errors.graphQLerror>)
-    | #Error(list<SharedTypes.Errors.graphQLerror>)
-  ]
-  let parse = (response): networkResponse =>
+  //   type networkResponse = [
+  //     | #Data(T.Query.t)
+  //     | #DataWithError(T.Query.t, list<SharedTypes.Errors.graphQLerror>)
+  //     | #Error(list<SharedTypes.Errors.graphQLerror>)
+  //   ]
+  let parse = (responseJson): rescriptResponse => {
+    let response = parseResponseJson(responseJson)
     try switch (response["data"], response["errors"]) {
     | (Some(data), Some(errors)) =>
       #DataWithError(
@@ -124,6 +126,7 @@ module MakeQuery = (T: GraphQLClientBase) => {
         ),
       })
     }
+  }
 
   //   @ocaml.deprecated("Use queryAndParse instead")
   //   let query = (~token=?, ~variables=?, ~operationName=?, ()) =>
@@ -134,18 +137,17 @@ module MakeQuery = (T: GraphQLClientBase) => {
 
   let queryAndParse = (~token=?, ~variables=?, ~operationName=?, ()) => {
     let fetch = makeClient(token, variables, operationName)
-    let fetchResponse = fetch |> Js.Promise.then_(response => {
+    let fetchResponse = Js.Promise.then_(response => {
       if Bs_fetch.Response.ok(response) {
         Bs_fetch.Response.json(response)
       } else {
         Js.Promise.reject(SharedTypes.Errors.FetchError(Bs_fetch.Response.statusText(response)))
       }
-    })
+    }, fetch)
 
-    let returnValue = fetchResponse |> Js.Promise.then_(json => {
-      let response = json
-      Js.Promise.resolve(response)
-    })
+    let returnValue = Js.Promise.then_((json: Js.Json.t) => {
+      Js.Promise.resolve(parse(json))
+    }, fetchResponse)
     returnValue
   }
   // |> Js.Promise.then_(parsedResponse => parse(parsedResponse)->Js.Promise.resolve)
