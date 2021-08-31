@@ -3,6 +3,7 @@
 import * as Curry from "rescript/lib/es6/curry.js";
 import * as Fetch from "bs-fetch/src/Fetch.bs.js";
 import * as Js_dict from "rescript/lib/es6/js_dict.js";
+import * as FutureJs from "reason-future/src/FutureJs.bs.js";
 import * as Belt_List from "rescript/lib/es6/belt_List.js";
 import * as Belt_Array from "rescript/lib/es6/belt_Array.js";
 import * as Belt_Option from "rescript/lib/es6/belt_Option.js";
@@ -88,13 +89,13 @@ function MakeQuery(T) {
       if (match === undefined) {
         if (match$1 !== undefined) {
           return {
-                  NAME: "Error",
-                  VAL: Belt_List.fromArray(Belt_Array.map(match$1, SharedTypes.Errors.graphQLerrorDecoder))
+                  TAG: /* Error */2,
+                  _0: Belt_List.fromArray(Belt_Array.map(match$1, SharedTypes.Errors.graphQLerrorDecoder))
                 };
         } else {
           return {
-                  NAME: "Error",
-                  VAL: {
+                  TAG: /* Error */2,
+                  _0: {
                     hd: {
                       message: "No data",
                       locations: /* [] */0,
@@ -112,23 +113,21 @@ function MakeQuery(T) {
       var data = Caml_option.valFromOption(match);
       if (match$1 !== undefined) {
         return {
-                NAME: "DataWithError",
-                VAL: [
-                  Curry._1(T.Query.parse, data),
-                  Belt_List.fromArray(Belt_Array.map(match$1, SharedTypes.Errors.graphQLerrorDecoder))
-                ]
+                TAG: /* DataWithError */1,
+                _0: Curry._1(T.Query.parse, Curry._1(T.Query.unsafe_fromJson, data)),
+                _1: Belt_List.fromArray(Belt_Array.map(match$1, SharedTypes.Errors.graphQLerrorDecoder))
               };
       } else {
         return {
-                NAME: "Data",
-                VAL: Curry._1(T.Query.parse, data)
+                TAG: /* Data */0,
+                _0: Curry._1(T.Query.parse, Curry._1(T.Query.unsafe_fromJson, data))
               };
       }
     }
     catch (exn){
       return {
-              NAME: "Error",
-              VAL: {
+              TAG: /* Error */2,
+              _0: {
                 hd: {
                   message: "Could not parse data",
                   locations: /* [] */0,
@@ -144,25 +143,30 @@ function MakeQuery(T) {
     }
   };
   var queryAndParse = function (token, variables, operationName, param) {
-    var $$fetch = makeClient(token, variables, operationName);
-    var fetchResponse = $$fetch.then(function (response) {
-          if (response.ok) {
-            return response.json();
-          } else {
-            return Promise.reject({
-                        RE_EXN_ID: SharedTypes.Errors.FetchError,
-                        _1: response.statusText
-                      });
-          }
-        });
-    return fetchResponse.then(function (json) {
+    return makeClient(token, variables, operationName).then(function (response) {
+                  if (response.ok) {
+                    return response.json();
+                  } else {
+                    return Promise.reject({
+                                RE_EXN_ID: SharedTypes.Errors.FetchError,
+                                _1: response.statusText
+                              });
+                  }
+                }).then(function (json) {
                 return Promise.resolve(parse(json));
               });
   };
+  var queryAndParseFuture = function (token, variables, operationName, param) {
+    return FutureJs.fromPromise(queryAndParse(token, variables, operationName, undefined), (function (error) {
+                  return {
+                          NAME: "UnknownError",
+                          VAL: String(error)
+                        };
+                }));
+  };
   return {
-          makeClient: makeClient,
-          parse: parse,
-          queryAndParse: queryAndParse
+          queryAndParse: queryAndParse,
+          queryAndParseFuture: queryAndParseFuture
         };
 }
 

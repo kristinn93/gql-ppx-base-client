@@ -3,20 +3,20 @@
 import * as Curry from "rescript/lib/es6/curry.js";
 import * as TestQuery from "./TestQuery.bs.js";
 
-function fetchTest(param) {
-  return Curry._4(TestQuery.Test.Query.queryAndParse, undefined, undefined, undefined, undefined);
-}
-
-fetchTest(undefined).then(function (response) {
-      console.log("response", response);
-      if (typeof response === "object" && response.NAME === "Data") {
-        console.log(response.VAL.algoliaSearchKey.key);
+Curry._4(TestQuery.Test.Query.queryAndParse, undefined, undefined, undefined, undefined).then(function (response) {
+      switch (response.TAG | 0) {
+        case /* Data */0 :
+            console.log(response._0.algoliaSearchKey.key);
+            break;
+        case /* DataWithError */1 :
+        case /* Error */2 :
+            break;
+        
       }
       return Promise.resolve(undefined);
     });
 
 export {
-  fetchTest ,
   
 }
 /*  Not a pure module */

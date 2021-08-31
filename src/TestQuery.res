@@ -7,5 +7,6 @@ module Test = {
             }
         }
         `)
+
   module Query = GraphQLFetchClient.MakeQuery(BaseClient.Make(MakeQuery))
 }

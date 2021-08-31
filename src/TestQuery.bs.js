@@ -55,6 +55,9 @@ var MakeQuery = {
 var Query = GraphQLFetchClient.MakeQuery(BaseClient.Make({
           Raw: Raw,
           query: query,
+          unsafe_fromJson: (function (prim) {
+              return prim;
+            }),
           parse: parse,
           toJson: (function (prim) {
               return prim;
